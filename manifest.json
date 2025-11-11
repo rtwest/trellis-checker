@@ -1,0 +1,12 @@
+{
+  "name": "Trellis Design System Checker",
+  "id": "trellis-design-system-checker",
+  "api": "1.0.0",
+  "editorType": ["figma"],
+  "main": "code.js",
+  "ui": "ui.html",
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": ["none"]
+  }
+}
