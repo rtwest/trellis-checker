@@ -5,6 +5,7 @@ package-lock.json
 # Build outputs
 *.js.map
 *.d.ts
+dist/
 
 # IDE
 .vscode/
