@@ -18,6 +18,12 @@ cp manifest.json "$DIST_DIR/$PLUGIN_NAME/"
 cp code.js "$DIST_DIR/$PLUGIN_NAME/"
 cp ui.html "$DIST_DIR/$PLUGIN_NAME/"
 
+# Copy images folder if it exists
+if [ -d "images" ]; then
+  echo "Copying images folder..."
+  cp -r images "$DIST_DIR/$PLUGIN_NAME/"
+fi
+
 # Copy install/use instructions
 cp README-INSTALL.md "$DIST_DIR/$PLUGIN_NAME/README.md"
 

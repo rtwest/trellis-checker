@@ -139,7 +139,7 @@ function scanNode(node) {
           nodeId: node.id,
           nodeName: node.name,
           componentName: node.name,
-          libraryName: 'External Library (unverified)',
+          libraryName: 'External Library',
           source: 'Library Component',
           severity: 'compliant',
         });
