@@ -33,10 +33,10 @@
     }
 
     .header-title {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 500;
       color: #000000;
-      margin-bottom: 2px;
+      margin-bottom: 4px;
     }
 
     .header-subtitle {
@@ -56,7 +56,7 @@
       font-weight: 500;
       cursor: pointer;
       transition: background 0.1s;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .scan-button:hover {
@@ -95,8 +95,8 @@
     }
 
     .score-label {
-      font-size: 18px;
-      font-weight: 400;
+      font-size: 16px;
+      font-weight: 500;
       margin-bottom: 8px;
     }
 
@@ -104,7 +104,7 @@
       font-size: 48px;
       font-weight: 400;
       color: #000000;
-      margin-bottom: 2px;
+      margin-bottom: 4px;
     }
 
     .score-text {
@@ -125,7 +125,7 @@
       font-size: 12px;
       font-weight: 500;
       color: #000000;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     .summary-item {
@@ -180,7 +180,7 @@
       color: #000000;
       border-radius: 6px;
       padding: 1px 4px;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 500;
       margin-left: 4px;
     }
@@ -221,7 +221,7 @@
     .component-header {
       display: flex;
       align-items: flex-start;
-      gap: 6px;
+      gap: 8px;
       margin-bottom: 4px;
     }
 
@@ -251,7 +251,7 @@
     }
 
     .component-info {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 400;
       color: #666666;
       margin-bottom: 4px;
@@ -266,11 +266,11 @@
     }
 
     .category {
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     .category-title {
-      font-size: 13px;
+      font-size: 16px;
       font-weight: 500;
       color: #000000;
       margin-bottom: 12px;
@@ -295,14 +295,14 @@
 
     .empty-state-text {
       font-size: 24px;
-      font-weight: 100;
+      font-weight: 400;
       font-family: 'HubSpot Serif', serif;
       color: #000000;
-      margin: 0 20px 50px 20px;
+      margin: 0 16px 24px 16px;
       line-height: 1.4;
     }
     .empty-state-text-second {
-      font-size: 18px;
+      font-size: 16px;
       display: block;
       margin-top: 8px;
     }
@@ -326,7 +326,7 @@
       display: inline-block;
       animation: spin 1s linear infinite;
       font-size: 16px;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     @keyframes spin {
@@ -580,7 +580,7 @@
 
         libHtml += `<div class="category"><div class="category-title">✓ Library Components</div>`;
         for (const [libName, comps] of Object.entries(byLibrary)) {
-          libHtml += `<div style="margin-bottom: 12px;"><div style="font-size: 11px; font-weight: 500; color: #666666; margin-bottom: 8px;">📦 ${libName} (${comps.length})</div>`;
+          libHtml += `<div style="margin-bottom: 12px;"><div style="font-size: 12px; font-weight: 500; color: #666666; margin-bottom: 8px;">📦 ${libName} (${comps.length})</div>`;
           comps.forEach((comp) => {
             libHtml += `
               <div class="component-item" data-node-id="${comp.nodeId}">
@@ -595,7 +595,7 @@
         }
         libHtml += `</div>`;
       } else {
-        libHtml = `<div class="empty-state" style="padding: 40px 16px;"><div class="empty-state-text">No library components found</div></div>`;
+        libHtml = `<div class="empty-state" style="padding: 24px 16px;"><div class="empty-state-text">No library components found</div></div>`;
       }
       document.getElementById('libraries-tab').innerHTML = libHtml;
 
@@ -650,7 +650,7 @@
       }
 
       if (localComponents.length === 0 && customShapes.length === 0 && customText.length === 0) {
-        issuesHtml = `<div class="empty-state" style="padding: 40px 16px;"><div class="empty-state-text">No issues found!</div></div>`;
+        issuesHtml = `<div class="empty-state" style="padding: 24px 16px;"><div class="empty-state-text">No issues found!</div></div>`;
       }
 
       document.getElementById('issues-tab').innerHTML = issuesHtml;
