@@ -1,4 +1,4 @@
-# Trellis Design System Checker
+# How to Use
 
 A Figma plugin that automatically scans your designs to ensure you're using components from your design system libraries rather than creating custom or local components.
 
