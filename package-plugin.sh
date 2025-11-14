@@ -19,7 +19,8 @@ cp code.js "$DIST_DIR/$PLUGIN_NAME/"
 cp ui.html "$DIST_DIR/$PLUGIN_NAME/"
 
 # Copy install/use instructions
-cp README-INSTALL.md "$DIST_DIR/$PLUGIN_NAME/README.md"
+cp README-QUICK-START.md "$DIST_DIR/$PLUGIN_NAME/"
+cp README-HOW-TO-USE.md "$DIST_DIR/$PLUGIN_NAME/"
 
 # Create ZIP file
 echo "Creating ZIP archive..."

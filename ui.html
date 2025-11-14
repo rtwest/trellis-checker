@@ -2,6 +2,43 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  
+  <!-- Sentry SDK -->
+  <script
+    src="https://browser.sentry-cdn.com/7.91.0/bundle.min.js"
+    crossorigin="anonymous"
+  ></script>
+  
+  <!-- Sentry Initialization -->
+  <script>
+    // Initialize Sentry
+    if (typeof Sentry !== 'undefined') {
+      console.log('[Sentry] Initializing Sentry...');
+      Sentry.init({
+        dsn: 'https://5773de3c75297a52a70d0ba83042ceed@o4507335015727104.ingest.us.sentry.io/4510363633909760',
+        environment: 'production',
+        release: '1.0.0', // Update this when you release new versions
+        
+        // Configure what to capture
+        beforeSend(event, hint) {
+          // Add plugin context to all events
+          event.tags = {
+            ...event.tags,
+            plugin: 'trellis-checker',
+          };
+          console.log('[Sentry] Sending event:', event.message || event.event_id);
+          return event;
+        },
+      });
+      
+      // Make Sentry available globally
+      window.Sentry = Sentry;
+      console.log('[Sentry] Sentry initialized successfully');
+    } else {
+      console.error('[Sentry] Sentry SDK not loaded! Check if script loaded correctly.');
+    }
+  </script>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
@@ -502,6 +539,49 @@
     if (scanBtnResults) {
       scanBtnResults.addEventListener('click', performScan);
     }
+
+    // Handle messages from code.js to track events in Sentry
+    window.addEventListener('message', (event) => {
+      if (event.data.pluginMessage) {
+        const msg = event.data.pluginMessage;
+        
+        if (msg.type === 'track-event') {
+          // Track custom event in Sentry
+          console.log('[Sentry] Received track-event:', msg.eventName, msg.eventData);
+          if (window.Sentry) {
+            try {
+              // Use captureEvent for better analytics tracking
+              window.Sentry.captureEvent({
+                message: msg.eventName,
+                level: 'info',
+                tags: {
+                  event_type: msg.eventName,
+                  plugin: 'trellis-checker',
+                },
+                extra: {
+                  ...msg.eventData,
+                  timestamp: new Date().toISOString(),
+                },
+              });
+              console.log('[Sentry] Event sent successfully:', msg.eventName);
+            } catch (error) {
+              console.error('[Sentry] Error sending event:', error);
+            }
+          } else {
+            console.error('[Sentry] Sentry not available when trying to send event:', msg.eventName);
+          }
+        }
+        
+        if (msg.type === 'set-sentry-user') {
+          // Set user context in Sentry
+          if (window.Sentry) {
+            window.Sentry.setUser({
+              id: msg.userId,
+            });
+          }
+        }
+      }
+    });
 
     // Listen for messages from plugin
     onmessage = (event) => {

@@ -6,8 +6,94 @@ let scannedComponents = {
   customText: []
 };
 
+// ===== SENTRY ANALYTICS TRACKING =====
+const PLUGIN_VERSION = '1.0.0';
+
+// Generate stable, anonymized user ID
+async function getUserId() {
+  try {
+    const storedUserId = await figma.clientStorage.getAsync('analytics_user_id');
+    if (storedUserId) return storedUserId;
+    
+    const figmaUserId = (figma.currentUser && figma.currentUser.id) || 'anonymous';
+    const userId = `user_${figmaUserId.substring(0, 8)}_${Date.now().toString(36)}`;
+    await figma.clientStorage.setAsync('analytics_user_id', userId);
+    return userId;
+  } catch (error) {
+    return 'anonymous';
+  }
+}
+
+// Check if this is the first run (installation)
+async function isFirstRun() {
+  try {
+    const hasRunBefore = await figma.clientStorage.getAsync('analytics_has_run');
+    if (!hasRunBefore) {
+      await figma.clientStorage.setAsync('analytics_has_run', true);
+      return true;
+    }
+    return false;
+  } catch (error) {
+    return false;
+  }
+}
+
+// Set user context in Sentry (via UI)
+function setSentryUser(userId) {
+  figma.ui.postMessage({
+    type: 'set-sentry-user',
+    userId: userId,
+  });
+}
+
+// Track plugin installation (first run)
+async function trackInstallation() {
+  console.log('[Analytics] Checking for first run...');
+  const isFirst = await isFirstRun();
+  console.log('[Analytics] Is first run?', isFirst);
+  if (isFirst) {
+    const userId = await getUserId();
+    console.log('[Analytics] User ID:', userId);
+    setSentryUser(userId);
+    
+    // Send installation event via UI
+    console.log('[Analytics] Sending plugin_installed event...');
+    figma.ui.postMessage({
+      type: 'track-event',
+      eventName: 'plugin_installed',
+      eventData: {
+        figma_version: figma.version,
+        plugin_version: PLUGIN_VERSION,
+      },
+    });
+  } else {
+    console.log('[Analytics] Not first run, skipping installation tracking');
+  }
+}
+
+// Track scan execution
+async function trackScan(scanData) {
+  console.log('[Analytics] Sending scan_executed event...', scanData);
+  figma.ui.postMessage({
+    type: 'track-event',
+    eventName: 'scan_executed',
+    eventData: {
+      elements_scanned: scanData.totalElementsScanned || 0,
+      compliance_score: scanData.complianceScore || 0,
+      library_components: (scanData.libraryComponents && scanData.libraryComponents.length) || 0,
+      local_components: (scanData.localComponents && scanData.localComponents.length) || 0,
+      custom_shapes: (scanData.customShapes && scanData.customShapes.length) || 0,
+      custom_text: (scanData.customText && scanData.customText.length) || 0,
+    },
+  });
+}
+// ===== END SENTRY ANALYTICS =====
+
 // Show plugin UI with increased height
 figma.showUI(__html__, { width: 400, height: 900 });
+
+// Track installation on first run
+trackInstallation();
 
 console.log('Plugin loaded! Ready to scan for component compliance.');
 
@@ -70,6 +156,16 @@ async function scanCurrentPage() {
         totalElementsScanned: totalElements,
         complianceScore: complianceScore,
       },
+    });
+    
+    // Track the scan event
+    await trackScan({
+      totalElementsScanned: totalElements,
+      complianceScore: complianceScore,
+      libraryComponents: scannedComponents.fromLibraries,
+      localComponents: scannedComponents.localComponents,
+      customShapes: scannedComponents.customShapes,
+      customText: scannedComponents.customText,
     });
   } catch (error) {
     console.error('Scan failed:', error);
