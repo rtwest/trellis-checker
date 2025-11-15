@@ -67,6 +67,7 @@
 
     .container {
       padding: 8px;
+      padding-bottom: 70px; /* Space for feedback button */
       height: 100vh;
       overflow-y: auto;
       display: flex;
@@ -410,7 +411,8 @@
     .feedback-button {
       position: fixed;
       bottom: 16px;
-      right: 16px;
+      left: 50%;
+      transform: translateX(-50%);
       width: 40px;
       height: 40px;
       padding: 0;
@@ -437,7 +439,8 @@
       content: 'Feedback would be terrific!';
       position: absolute;
       bottom: 100%;
-      right: 0;
+      left: 50%;
+      transform: translateX(-50%);
       margin-bottom: 8px;
       padding: 6px 10px;
       background: #000000;
