@@ -203,43 +203,29 @@
     <div id="dashboard" style="display: none;">
       <div class="stats-grid">
         <div class="stat-card">
-          <h3>Total Scans</h3>
-          <div class="value" id="totalScans">0</div>
-          <div class="label">All time</div>
-        </div>
-        <div class="stat-card">
           <h3>Unique Users</h3>
           <div class="value" id="totalUsers">0</div>
-          <div class="label">Active users</div>
+          <div class="label">Total unique users</div>
         </div>
         <div class="stat-card">
-          <h3>Avg Compliance</h3>
-          <div class="value" id="avgCompliance">0%</div>
-          <div class="label">Average score</div>
-        </div>
-        <div class="stat-card">
-          <h3>Total Elements</h3>
-          <div class="value" id="totalElements">0</div>
-          <div class="label">Scanned</div>
+          <h3>Total Scan Issues</h3>
+          <div class="value" id="totalScanIssues">0</div>
+          <div class="label">All time issues found</div>
         </div>
       </div>
 
       <div class="charts-grid">
         <div class="chart-card">
-          <h3>Compliance Score Over Time</h3>
-          <canvas id="complianceChart"></canvas>
+          <h3>Number of Installs</h3>
+          <canvas id="installsChart"></canvas>
         </div>
         <div class="chart-card">
-          <h3>Scans Per Day</h3>
+          <h3>Number of Scans Per Day</h3>
           <canvas id="scansChart"></canvas>
         </div>
         <div class="chart-card">
-          <h3>Elements Scanned Distribution</h3>
-          <canvas id="elementsChart"></canvas>
-        </div>
-        <div class="chart-card">
-          <h3>Compliance Score Distribution</h3>
-          <canvas id="scoreDistributionChart"></canvas>
+          <h3>Number of Scan Issues Found Per Day</h3>
+          <canvas id="scanIssuesChart"></canvas>
         </div>
       </div>
 
@@ -278,7 +264,7 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyaXRxY3R2eGxoYWJ5eHdsaXNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1OTMwNTMsImV4cCI6MjA2NjE2OTA1M30.g82egwBOdKCSw11rbySbgXa98N2w49ZRROHE2gT0P9k';
     
     let supabaseClient = null;
-    let complianceChart, scansChart, elementsChart, scoreDistributionChart;
+    let installsChart, scansChart, scanIssuesChart;
 
     // Initialize Supabase client
     function initSupabase() {
@@ -341,7 +327,7 @@
         updateStats(scanEvents, installEvents, events);
 
         // Update charts
-        updateCharts(scanEvents);
+        updateCharts(scanEvents, installEvents);
 
         // Update table
         updateTable(scanEvents);
@@ -356,59 +342,53 @@
     }
 
     function updateStats(scanEvents, installEvents, allEvents) {
-      document.getElementById('totalScans').textContent = scanEvents.length;
-      
       // Count unique users
       const uniqueUsers = new Set(allEvents.filter(e => e.user_id).map(e => e.user_id));
       document.getElementById('totalUsers').textContent = uniqueUsers.size;
 
-      const scores = scanEvents
-        .map(e => e.compliance_score)
-        .filter(s => s !== null && s !== undefined);
-      const avgScore = scores.length > 0
-        ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
-        : 0;
-      document.getElementById('avgCompliance').textContent = avgScore + '%';
-
-      const totalElements = scanEvents
-        .map(e => e.elements_scanned)
-        .filter(e => e !== null && e !== undefined)
+      // Calculate total scan issues (local_components + custom_shapes + custom_text)
+      const totalScanIssues = scanEvents
+        .map(e => (e.local_components || 0) + (e.custom_shapes || 0) + (e.custom_text || 0))
         .reduce((a, b) => a + b, 0);
-      document.getElementById('totalElements').textContent = totalElements.toLocaleString();
+      document.getElementById('totalScanIssues').textContent = totalScanIssues.toLocaleString();
     }
 
-    function updateCharts(scanEvents) {
-      // Sort events by date
-      const sortedEvents = scanEvents
-        .map(e => ({
-          date: new Date(e.created_at),
-          score: e.compliance_score,
-          elements: e.elements_scanned,
-        }))
-        .filter(e => e.score !== null && e.score !== undefined)
-        .sort((a, b) => a.date - b.date);
+    function updateCharts(scanEvents, installEvents) {
+      // Helper function to group events by date
+      function groupEventsByDate(events) {
+        const byDate = {};
+        events.forEach(e => {
+          const date = new Date(e.created_at);
+          const dateKey = date.toISOString().split('T')[0];
+          byDate[dateKey] = (byDate[dateKey] || 0) + 1;
+        });
+        return byDate;
+      }
 
-      // Group by date for scans chart
-      const scansByDate = {};
-      sortedEvents.forEach(e => {
-        const dateKey = e.date.toISOString().split('T')[0];
-        scansByDate[dateKey] = (scansByDate[dateKey] || 0) + 1;
-      });
+      // Get all unique dates across all events to ensure consistent x-axis
+      const allDates = new Set();
+      scanEvents.forEach(e => allDates.add(new Date(e.created_at).toISOString().split('T')[0]));
+      installEvents.forEach(e => allDates.add(new Date(e.created_at).toISOString().split('T')[0]));
+      const sortedDates = Array.from(allDates).sort();
 
-      // Compliance over time
-      const complianceCtx = document.getElementById('complianceChart').getContext('2d');
-      if (complianceChart) complianceChart.destroy();
-      complianceChart = new Chart(complianceCtx, {
+      // Group installs by date
+      const installsByDate = groupEventsByDate(installEvents);
+
+      // Installs chart
+      const installsCtx = document.getElementById('installsChart').getContext('2d');
+      if (installsChart) installsChart.destroy();
+      installsChart = new Chart(installsCtx, {
         type: 'line',
         data: {
-          labels: sortedEvents.map(e => e.date.toLocaleDateString()),
+          labels: sortedDates.map(d => new Date(d).toLocaleDateString()),
           datasets: [{
-            label: 'Compliance Score (%)',
-            data: sortedEvents.map(e => e.score),
+            label: 'Installs',
+            data: sortedDates.map(d => installsByDate[d] || 0),
             borderColor: '#000000',
             backgroundColor: 'rgba(0, 0, 0, 0.1)',
             tension: 0.4,
             borderWidth: 1,
+            fill: true,
           }],
         },
         options: {
@@ -422,7 +402,6 @@
           scales: {
             y: {
               beginAtZero: true,
-              max: 100,
               grid: {
                 color: '#e5e5e5',
               },
@@ -431,6 +410,7 @@
                 font: {
                   size: 11,
                 },
+                stepSize: 1,
               },
             },
             x: {
@@ -448,17 +428,25 @@
         },
       });
 
-      // Scans per day
+      // Group scans by date
+      const scansByDate = groupEventsByDate(scanEvents);
+      const scanDates = Object.keys(scansByDate).sort();
+
+      // Scans per day chart
       const scansCtx = document.getElementById('scansChart').getContext('2d');
       if (scansChart) scansChart.destroy();
       scansChart = new Chart(scansCtx, {
-        type: 'bar',
+        type: 'line',
         data: {
-          labels: Object.keys(scansByDate).sort(),
+          labels: scanDates.map(d => new Date(d).toLocaleDateString()),
           datasets: [{
             label: 'Scans',
-            data: Object.keys(scansByDate).sort().map(d => scansByDate[d]),
-            backgroundColor: '#000000',
+            data: scanDates.map(d => scansByDate[d]),
+            borderColor: '#000000',
+            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+            tension: 0.4,
+            borderWidth: 1,
+            fill: true,
           }],
         },
         options: {
@@ -480,11 +468,12 @@
                 font: {
                   size: 11,
                 },
+                stepSize: 1,
               },
             },
             x: {
               grid: {
-                display: false,
+                color: '#e5e5e5',
               },
               ticks: {
                 color: '#666666',
@@ -497,17 +486,31 @@
         },
       });
 
-      // Elements distribution
-      const elementsCtx = document.getElementById('elementsChart').getContext('2d');
-      if (elementsChart) elementsChart.destroy();
-      elementsChart = new Chart(elementsCtx, {
-        type: 'bar',
+      // Group scan issues by date (local_components + custom_shapes + custom_text)
+      const scanIssuesByDate = {};
+      scanEvents.forEach(e => {
+        const date = new Date(e.created_at);
+        const dateKey = date.toISOString().split('T')[0];
+        const issues = (e.local_components || 0) + (e.custom_shapes || 0) + (e.custom_text || 0);
+        scanIssuesByDate[dateKey] = (scanIssuesByDate[dateKey] || 0) + issues;
+      });
+      const issueDates = Object.keys(scanIssuesByDate).sort();
+
+      // Scan issues per day chart
+      const scanIssuesCtx = document.getElementById('scanIssuesChart').getContext('2d');
+      if (scanIssuesChart) scanIssuesChart.destroy();
+      scanIssuesChart = new Chart(scanIssuesCtx, {
+        type: 'line',
         data: {
-          labels: sortedEvents.map((_, i) => 'Scan ' + (i + 1)),
+          labels: issueDates.map(d => new Date(d).toLocaleDateString()),
           datasets: [{
-            label: 'Elements Scanned',
-            data: sortedEvents.map(e => e.elements || 0),
-            backgroundColor: '#666666',
+            label: 'Issues Found',
+            data: issueDates.map(d => scanIssuesByDate[d]),
+            borderColor: '#666666',
+            backgroundColor: 'rgba(102, 102, 102, 0.1)',
+            tension: 0.4,
+            borderWidth: 1,
+            fill: true,
           }],
         },
         options: {
@@ -529,61 +532,14 @@
                 font: {
                   size: 11,
                 },
+                stepSize: 1,
               },
             },
             x: {
               grid: {
-                display: false,
+                color: '#e5e5e5',
               },
               ticks: {
-                color: '#666666',
-                font: {
-                  size: 11,
-                },
-              },
-            },
-          },
-        },
-      });
-
-      // Score distribution
-      const scoreCtx = document.getElementById('scoreDistributionChart').getContext('2d');
-      if (scoreDistributionChart) scoreDistributionChart.destroy();
-      const scoreRanges = {
-        '90-100%': 0,
-        '80-89%': 0,
-        '70-79%': 0,
-        '60-69%': 0,
-        '0-59%': 0,
-      };
-      sortedEvents.forEach(e => {
-        if (e.score >= 90) scoreRanges['90-100%']++;
-        else if (e.score >= 80) scoreRanges['80-89%']++;
-        else if (e.score >= 70) scoreRanges['70-79%']++;
-        else if (e.score >= 60) scoreRanges['60-69%']++;
-        else scoreRanges['0-59%']++;
-      });
-      scoreDistributionChart = new Chart(scoreCtx, {
-        type: 'doughnut',
-        data: {
-          labels: Object.keys(scoreRanges),
-          datasets: [{
-            data: Object.values(scoreRanges),
-            backgroundColor: [
-              '#000000',
-              '#666666',
-              '#999999',
-              '#cccccc',
-              '#e5e5e5',
-            ],
-          }],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: true,
-          plugins: {
-            legend: {
-              labels: {
                 color: '#666666',
                 font: {
                   size: 11,

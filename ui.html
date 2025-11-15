@@ -562,6 +562,7 @@
             .insert([
               {
                 event_type: msg.eventName,
+                event_name: msg.eventName,
                 user_id: msg.eventData.user_id || null,
                 elements_scanned: msg.eventData.elements_scanned || 0,
                 compliance_score: msg.eventData.compliance_score || 0,
