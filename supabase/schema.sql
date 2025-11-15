@@ -5,7 +5,6 @@
 CREATE TABLE IF NOT EXISTS analytics_events (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   event_type TEXT NOT NULL,
-  event_name TEXT NOT NULL,
   user_id TEXT,
   figma_version TEXT,
   plugin_version TEXT,

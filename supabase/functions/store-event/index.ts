@@ -19,9 +19,9 @@ serve(async (req) => {
     const eventData = await req.json()
 
     // Validate required fields
-    if (!eventData.event_type || !eventData.event_name) {
+    if (!eventData.event_type) {
       return new Response(
-        JSON.stringify({ error: 'Missing required fields: event_type, event_name' }),
+        JSON.stringify({ error: 'Missing required field: event_type' }),
         {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -40,7 +40,6 @@ serve(async (req) => {
       .insert([
         {
           event_type: eventData.event_type,
-          event_name: eventData.event_name,
           user_id: eventData.user_id || null,
           figma_version: eventData.figma_version || null,
           plugin_version: eventData.plugin_version || null,
