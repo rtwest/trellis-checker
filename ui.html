@@ -67,11 +67,25 @@
 
     .container {
       padding: 8px;
-      padding-bottom: 60px; /* Space for feedback link */
-      height: 100vh;
+      padding-bottom: 0;
+      height: calc(100vh - 48px); /* Account for footer height */
       overflow-y: auto;
       display: flex;
       flex-direction: column;
+    }
+
+    .plugin-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background: #ffffff;
+      border-top: 1px solid #e5e5e5;
+      display: flex;
+      align-items: center;
+      padding-left: 16px;
+      z-index: 1000;
     }
 
     .header {
@@ -409,9 +423,6 @@
     }
 
     .feedback-button {
-      position: fixed;
-      bottom: 32px;
-      left: 16px;
       padding: 0;
       background: transparent;
       color: #000000;
@@ -421,7 +432,6 @@
       text-decoration: none;
       cursor: pointer;
       transition: opacity 0.1s;
-      z-index: 1000;
     }
 
     .feedback-button:hover {
@@ -877,11 +887,15 @@
     }
 
     // Feedback functionality
+    const pluginFooter = document.createElement('div');
+    pluginFooter.className = 'plugin-footer';
+    document.body.appendChild(pluginFooter);
+
     const feedbackButton = document.createElement('button');
     feedbackButton.className = 'feedback-button';
     feedbackButton.textContent = '💬 Feedback';
     feedbackButton.setAttribute('aria-label', 'Provide feedback');
-    document.body.appendChild(feedbackButton);
+    pluginFooter.appendChild(feedbackButton);
 
     const modalOverlay = document.createElement('div');
     modalOverlay.className = 'modal-overlay';
