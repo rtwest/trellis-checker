@@ -13,14 +13,38 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyaXRxY3R2eGxoYWJ5eHdsaXNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1OTMwNTMsImV4cCI6MjA2NjE2OTA1M30.g82egwBOdKCSw11rbySbgXa98N2w49ZRROHE2gT0P9k';
     
     let supabaseClient = null;
-    if (SUPABASE_URL && SUPABASE_ANON_KEY) {
-      try {
-        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        console.log('[Supabase] Client initialized successfully');
-      } catch (error) {
-        console.error('[Supabase] Failed to initialize:', error);
+    
+    // Wait for Supabase SDK to load
+    function waitForSupabase(callback, maxAttempts) {
+      maxAttempts = maxAttempts || 50; // Try for up to 5 seconds (50 * 100ms)
+      var attempts = 0;
+      
+      function checkSupabase() {
+        attempts++;
+        if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+          console.log('[Supabase] SDK loaded, initializing...');
+          callback();
+        } else if (attempts < maxAttempts) {
+          setTimeout(checkSupabase, 100);
+        } else {
+          console.error('[Supabase] Supabase SDK failed to load after ' + (maxAttempts * 100) + 'ms');
+        }
       }
+      
+      checkSupabase();
     }
+    
+    // Initialize Supabase once SDK is loaded
+    waitForSupabase(function() {
+      if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+        try {
+          supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+          console.log('[Supabase] Client initialized successfully');
+        } catch (error) {
+          console.error('[Supabase] Failed to initialize:', error);
+        }
+      }
+    });
   </script>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -538,7 +562,7 @@
             .insert([
               {
                 event_type: msg.eventName,
-                event_name: msg.eventName,
+                user_id: msg.eventData.user_id || null,
                 elements_scanned: msg.eventData.elements_scanned || 0,
                 compliance_score: msg.eventData.compliance_score || 0,
                 library_components: msg.eventData.library_components || 0,
@@ -547,7 +571,6 @@
                 custom_text: msg.eventData.custom_text || 0,
                 figma_version: msg.eventData.figma_version || null,
                 plugin_version: msg.eventData.plugin_version || null,
-                metadata: msg.eventData,
               },
             ])
             .then(({ data, error }) => {

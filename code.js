@@ -9,6 +9,24 @@ let scannedComponents = {
 // ===== ANALYTICS TRACKING =====
 const PLUGIN_VERSION = '1.0.0';
 
+// Get or create a unique user ID
+async function getUserId() {
+  try {
+    let userId = await figma.clientStorage.getAsync('analytics_user_id');
+    if (!userId) {
+      // Generate a unique ID (UUID-like format)
+      userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      await figma.clientStorage.setAsync('analytics_user_id', userId);
+      console.log('[Analytics] Generated new user ID:', userId);
+    }
+    return userId;
+  } catch (error) {
+    console.error('[Analytics] Error getting user ID:', error);
+    // Fallback: generate a temporary ID
+    return 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  }
+}
+
 // Check if this is the first run (installation)
 async function isFirstRun() {
   try {
@@ -29,12 +47,15 @@ async function trackInstallation() {
   const isFirst = await isFirstRun();
   console.log('[Analytics] Is first run?', isFirst);
   if (isFirst) {
+    // Get user ID
+    const userId = await getUserId();
     // Send installation event via UI
     console.log('[Analytics] Sending plugin_installed event...');
     figma.ui.postMessage({
       type: 'track-event',
       eventName: 'plugin_installed',
       eventData: {
+        user_id: userId,
         figma_version: figma.version,
         plugin_version: PLUGIN_VERSION,
       },
@@ -47,10 +68,13 @@ async function trackInstallation() {
 // Track scan execution
 async function trackScan(scanData) {
   console.log('[Analytics] Sending scan_executed event...', scanData);
+  // Get user ID
+  const userId = await getUserId();
   figma.ui.postMessage({
     type: 'track-event',
     eventName: 'scan_executed',
     eventData: {
+      user_id: userId,
       elements_scanned: scanData.totalElementsScanned || 0,
       compliance_score: scanData.complianceScore || 0,
       library_components: (scanData.libraryComponents && scanData.libraryComponents.length) || 0,

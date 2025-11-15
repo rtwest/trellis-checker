@@ -14,137 +14,126 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: #f5f5f5;
-      color: #333;
-      padding: 20px;
+      font-family: 'HubSpot Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      font-size: 11px;
+      line-height: 1.4;
+      background: #ffffff;
+      color: #000000;
+      padding: 8px;
     }
 
     .container {
       max-width: 1400px;
       margin: 0 auto;
-    }
-
-    header {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    h1 {
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
-
-    .config {
-      background: #fff3cd;
-      padding: 15px;
-      border-radius: 6px;
-      margin-bottom: 20px;
-      border-left: 4px solid #ffc107;
-    }
-
-    .config input {
-      width: 100%;
       padding: 8px;
-      margin: 5px 0;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-family: monospace;
+    }
+
+    .header {
+      margin-bottom: 12px;
+    }
+
+    .header-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: #000000;
+      margin-bottom: 4px;
+    }
+
+    .header-subtitle {
       font-size: 12px;
-    }
-
-    .config button {
-      background: #007bff;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      margin-top: 10px;
-    }
-
-    .config button:hover {
-      background: #0056b3;
+      font-weight: 400;
+      color: #666666;
     }
 
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      margin-bottom: 20px;
+      gap: 8px;
+      margin-bottom: 16px;
     }
 
     .stat-card {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      background: #f8f8f8;
+      border-left: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 8px;
     }
 
     .stat-card h3 {
       font-size: 12px;
-      color: #666;
-      text-transform: uppercase;
-      margin-bottom: 10px;
+      font-weight: 500;
+      color: #000000;
+      margin-bottom: 4px;
     }
 
     .stat-card .value {
-      font-size: 32px;
-      font-weight: bold;
-      color: #333;
+      font-size: 24px;
+      font-weight: 400;
+      color: #000000;
+      margin-bottom: 4px;
     }
 
     .stat-card .label {
-      font-size: 14px;
-      color: #999;
-      margin-top: 5px;
+      font-size: 11px;
+      font-weight: 400;
+      color: #666666;
     }
 
     .charts-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 20px;
-      margin-bottom: 20px;
+      gap: 8px;
+      margin-bottom: 16px;
     }
 
     .chart-card {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      background: #ffffff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 8px;
     }
 
     .chart-card h3 {
-      font-size: 16px;
-      margin-bottom: 15px;
-      color: #333;
+      font-size: 12px;
+      font-weight: 500;
+      color: #000000;
+      margin-bottom: 8px;
+    }
+
+    .chart-card canvas {
+      max-height: 300px;
     }
 
     .loading {
       text-align: center;
-      padding: 40px;
-      color: #666;
+      padding: 24px 16px;
+      color: #666666;
+      font-size: 12px;
     }
 
     .error {
-      background: #f8d7da;
-      color: #721c24;
-      padding: 15px;
+      background: #ffffff;
+      border: 1px solid #e5e5e5;
       border-radius: 6px;
-      margin-bottom: 20px;
-      border-left: 4px solid #dc3545;
+      padding: 8px;
+      margin-bottom: 16px;
+      color: #000000;
+      font-size: 12px;
     }
 
     .table-container {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      background: #ffffff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 8px;
       overflow-x: auto;
+    }
+
+    .table-container h3 {
+      font-size: 12px;
+      font-weight: 500;
+      color: #000000;
+      margin-bottom: 8px;
     }
 
     table {
@@ -153,45 +142,61 @@
     }
 
     th, td {
-      padding: 12px;
+      padding: 6px 8px;
       text-align: left;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid #e5e5e5;
+      font-size: 11px;
     }
 
     th {
-      background: #f8f9fa;
-      font-weight: 600;
-      color: #333;
+      background: #f8f8f8;
+      font-weight: 500;
+      color: #000000;
     }
 
     tr:hover {
-      background: #f8f9fa;
+      background: #f8f8f8;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 24px 16px;
+      color: #999999;
+    }
+
+    .empty-state-icon {
+      width: 200px;
+      height: auto;
+      opacity: 0.6;
+      margin: 16px auto;
+    }
+
+    .empty-state-text {
+      font-size: 24px;
+      font-weight: 400;
+      font-family: 'HubSpot Serif', serif;
+      color: #000000;
+      margin: 0 16px 24px 16px;
+      line-height: 1.4;
+    }
+
+    .empty-state-text-second {
+      font-size: 16px;
+      display: block;
+      margin-top: 8px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <header>
-      <h1>📊 Trellis Checker Analytics Dashboard</h1>
-      <p>Monitor plugin usage, scan statistics, and compliance trends</p>
-    </header>
-
-    <div class="config">
-      <h3>🔑 Supabase Configuration</h3>
-      <p style="margin-bottom: 10px; font-size: 14px;">Enter your Supabase credentials:</p>
-      <label>Supabase URL:</label>
-      <input type="text" id="supabaseUrl" value="https://yritqctvxlhabyxwlisi.supabase.co" placeholder="https://your-project.supabase.co" />
-      <label>Supabase Anon Key:</label>
-      <input type="password" id="supabaseKey" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyaXRxY3R2eGxoYWJ5eHdsaXNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1OTMwNTMsImV4cCI6MjA2NjE2OTA1M30.g82egwBOdKCSw11rbySbgXa98N2w49ZRROHE2gT0P9k" placeholder="eyJhbGc..." />
-      <button onclick="loadData()">Load Analytics Data</button>
-      <p style="margin-top: 10px; font-size: 12px; color: #666;">
-        💡 Get these from: Supabase Dashboard → Settings → API
-      </p>
+    <div class="header">
+      <div class="header-title">Trellis Checker Analytics</div>
+      <div class="header-subtitle">Monitor plugin usage, scan statistics, and compliance trends</div>
     </div>
 
     <div id="errorMessage" class="error" style="display: none;"></div>
 
-    <div id="loading" class="loading" style="display: none;">
+    <div id="loading" class="loading">
       <p>Loading analytics data...</p>
     </div>
 
@@ -203,9 +208,9 @@
           <div class="label">All time</div>
         </div>
         <div class="stat-card">
-          <h3>Installations</h3>
-          <div class="value" id="totalInstalls">0</div>
-          <div class="label">Unique users</div>
+          <h3>Unique Users</h3>
+          <div class="value" id="totalUsers">0</div>
+          <div class="label">Active users</div>
         </div>
         <div class="stat-card">
           <h3>Avg Compliance</h3>
@@ -239,17 +244,17 @@
       </div>
 
       <div class="table-container">
-        <h3 style="margin-bottom: 15px;">Recent Scans</h3>
+        <h3>Recent Scans</h3>
         <table id="scansTable">
           <thead>
             <tr>
               <th>Date</th>
               <th>Elements</th>
               <th>Compliance</th>
-              <th>Library Components</th>
-              <th>Local Components</th>
-              <th>Custom Shapes</th>
-              <th>Custom Text</th>
+              <th>Library</th>
+              <th>Local</th>
+              <th>Shapes</th>
+              <th>Text</th>
             </tr>
           </thead>
           <tbody id="scansTableBody">
@@ -257,30 +262,56 @@
         </table>
       </div>
     </div>
+
+    <div id="emptyState" class="empty-state" style="display: none;">
+      <div class="empty-state-text">No analytics data yet</div>
+      <img class="empty-state-icon" id="emptyStateImage" src="" alt="" />
+      <div class="empty-state-text">
+        <span class="empty-state-text-second">Run some scans in the plugin to see analytics here</span>
+      </div>
+    </div>
   </div>
 
   <script>
+    // Supabase configuration (hardcoded)
+    const SUPABASE_URL = 'https://yritqctvxlhabyxwlisi.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyaXRxY3R2eGxoYWJ5eHdsaXNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1OTMwNTMsImV4cCI6MjA2NjE2OTA1M30.g82egwBOdKCSw11rbySbgXa98N2w49ZRROHE2gT0P9k';
+    
     let supabaseClient = null;
     let complianceChart, scansChart, elementsChart, scoreDistributionChart;
 
-    async function loadData() {
-      const supabaseUrl = document.getElementById('supabaseUrl').value.trim();
-      const supabaseKey = document.getElementById('supabaseKey').value.trim();
-
-      if (!supabaseUrl || !supabaseKey) {
-        showError('Please fill in all configuration fields');
-        return;
+    // Initialize Supabase client
+    function initSupabase() {
+      if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        return true;
       }
+      return false;
+    }
 
-      // Store in localStorage for convenience
-      localStorage.setItem('supabase_url', supabaseUrl);
-      localStorage.setItem('supabase_key', supabaseKey);
+    // Wait for Supabase SDK to load
+    function waitForSupabase(callback, maxAttempts) {
+      maxAttempts = maxAttempts || 50;
+      var attempts = 0;
+      
+      function checkSupabase() {
+        attempts++;
+        if (initSupabase()) {
+          callback();
+        } else if (attempts < maxAttempts) {
+          setTimeout(checkSupabase, 100);
+        } else {
+          showError('Failed to load Supabase SDK');
+        }
+      }
+      
+      checkSupabase();
+    }
 
-      // Initialize Supabase client
-      supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-
+    async function loadData() {
       document.getElementById('loading').style.display = 'block';
       document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('emptyState').style.display = 'none';
       document.getElementById('errorMessage').style.display = 'none';
 
       try {
@@ -296,8 +327,9 @@
         }
 
         if (!events || events.length === 0) {
-          showError('No events found. Make sure you have scan data in your Supabase database.');
           document.getElementById('loading').style.display = 'none';
+          document.getElementById('emptyState').style.display = 'block';
+          showEmptyState();
           return;
         }
 
@@ -306,7 +338,7 @@
         const installEvents = events.filter(e => e.event_type === 'plugin_installed');
 
         // Update stats
-        updateStats(scanEvents, installEvents);
+        updateStats(scanEvents, installEvents, events);
 
         // Update charts
         updateCharts(scanEvents);
@@ -323,9 +355,12 @@
       }
     }
 
-    function updateStats(scanEvents, installEvents) {
+    function updateStats(scanEvents, installEvents, allEvents) {
       document.getElementById('totalScans').textContent = scanEvents.length;
-      document.getElementById('totalInstalls').textContent = installEvents.length;
+      
+      // Count unique users
+      const uniqueUsers = new Set(allEvents.filter(e => e.user_id).map(e => e.user_id));
+      document.getElementById('totalUsers').textContent = uniqueUsers.size;
 
       const scores = scanEvents
         .map(e => e.compliance_score)
@@ -370,18 +405,44 @@
           datasets: [{
             label: 'Compliance Score (%)',
             data: sortedEvents.map(e => e.score),
-            borderColor: '#007bff',
-            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+            borderColor: '#000000',
+            backgroundColor: 'rgba(0, 0, 0, 0.1)',
             tension: 0.4,
+            borderWidth: 1,
           }],
         },
         options: {
           responsive: true,
           maintainAspectRatio: true,
+          plugins: {
+            legend: {
+              display: false,
+            },
+          },
           scales: {
             y: {
               beginAtZero: true,
               max: 100,
+              grid: {
+                color: '#e5e5e5',
+              },
+              ticks: {
+                color: '#666666',
+                font: {
+                  size: 11,
+                },
+              },
+            },
+            x: {
+              grid: {
+                color: '#e5e5e5',
+              },
+              ticks: {
+                color: '#666666',
+                font: {
+                  size: 11,
+                },
+              },
             },
           },
         },
@@ -397,12 +458,42 @@
           datasets: [{
             label: 'Scans',
             data: Object.keys(scansByDate).sort().map(d => scansByDate[d]),
-            backgroundColor: '#28a745',
+            backgroundColor: '#000000',
           }],
         },
         options: {
           responsive: true,
           maintainAspectRatio: true,
+          plugins: {
+            legend: {
+              display: false,
+            },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: '#e5e5e5',
+              },
+              ticks: {
+                color: '#666666',
+                font: {
+                  size: 11,
+                },
+              },
+            },
+            x: {
+              grid: {
+                display: false,
+              },
+              ticks: {
+                color: '#666666',
+                font: {
+                  size: 11,
+                },
+              },
+            },
+          },
         },
       });
 
@@ -416,12 +507,42 @@
           datasets: [{
             label: 'Elements Scanned',
             data: sortedEvents.map(e => e.elements || 0),
-            backgroundColor: '#17a2b8',
+            backgroundColor: '#666666',
           }],
         },
         options: {
           responsive: true,
           maintainAspectRatio: true,
+          plugins: {
+            legend: {
+              display: false,
+            },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: '#e5e5e5',
+              },
+              ticks: {
+                color: '#666666',
+                font: {
+                  size: 11,
+                },
+              },
+            },
+            x: {
+              grid: {
+                display: false,
+              },
+              ticks: {
+                color: '#666666',
+                font: {
+                  size: 11,
+                },
+              },
+            },
+          },
         },
       });
 
@@ -449,17 +570,27 @@
           datasets: [{
             data: Object.values(scoreRanges),
             backgroundColor: [
-              '#28a745',
-              '#ffc107',
-              '#fd7e14',
-              '#dc3545',
-              '#6c757d',
+              '#000000',
+              '#666666',
+              '#999999',
+              '#cccccc',
+              '#e5e5e5',
             ],
           }],
         },
         options: {
           responsive: true,
           maintainAspectRatio: true,
+          plugins: {
+            legend: {
+              labels: {
+                color: '#666666',
+                font: {
+                  size: 11,
+                },
+              },
+            },
+          },
         },
       });
     }
@@ -494,15 +625,30 @@
       errorDiv.style.display = 'block';
     }
 
-    // Load saved credentials on page load
-    window.onload = function() {
-      const savedUrl = localStorage.getItem('supabase_url');
-      const savedKey = localStorage.getItem('supabase_key');
+    function showEmptyState() {
+      // Randomly select an empty state image (same as plugin)
+      const emptyStateImages = [
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAMgCAYAAAGsdzb+AAAACXBIWXMAAARtAAAEbQF9GpMFAAAgAElEQVR4nOzdf2wc933w+Y+plSXLu7eEmxQie9Uqd6YWhBLa/IHi8DAr0UCAQoaca5EHbuoERWsjVvDYuN6TFo8vMlLVKazUQJ60eSA/COPHbnqwncRo7pJIldDiUC+1UR/ggUjKmxrEij5Ey0NJXQO43Nu1LFkUdX8sZzm73B8zszPz/X5n3i9AELncnflIw+985vtbBAAAAIi8e1SdOJEdvXvyxFOSmxrf8bPc5LgU5helcHmx+fWpcclN7ny/iMgbZ8/LiVMviohc2ygtfSKAkEOh9ILUFi4Ffp7kxHTT9xulJWX/ZicSqgMIWpuLfldk54USkd/eKC39OIyYuon8BemkzYX6P0VEDh//t1JeXRMRNaXJ1QVJZEffFpEZ6/ux7IgUS8tt31u/30/IyRNPNl57+c235LlvfttbpCF599zfiEjbEhQKV78Biezo27WFSzP9ntT6x4aRQ7xKTkwrKSEDYZ8Q3XFBNBNqUi/ML3asR/jl2NPP7qi/WL742KPynReeD/T8/XJ7QWaCCMJPnS6GiMjrZ8/L62fPd/286rzmqYRUqjUpXm3/dNUqnUzKWHbE0XuTE9PK/0NUc3tB8iIyk04lA7/1xJXnW9aezz3Q9IO7v3pA7jz+nNx55Hc7frhweVGO7r3h8pTx4ltSv+dfViRx5hlJnHmm88nWPy67//6XIjLq12l36HXLK8wvypdPvdiojesmdk0nucnxRm1cR9RDNBPqBZn7cF+YpzMSJUQzXBDNcEE0wwXRDBdEM+E+Zd3kKasXSohmQq2pP3TvzcDPUZhflGNfetbTZ2sLl+T07GtyfCbnc1TOhXpB3vlobyjn8dqEb2/+3/r7rvWzwvyivPHT3v0pNi9slJb+1G0MsWvL8io3WR8 [... omitted end of long line]',
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB9AAAAfQCAYAAAHtP/TvAAAACXBIWXMAAAsSAAALEgHS3X78AAAgAElEQVR4nOy9f5BURbr3+QWqlYFiaHAYF5ix6Qi1tob3OtJD3N21LwIRxjoYMOu8GI54WbcdYmxuwI7jj3hZca+As2CwLzoyAXunxxBYV8BLSDghLAyxvkEj027E+0rj+L5aUepG28wFwmHkx9B4G7ug94+u53SerMxzMs/J86sqPxGGdNU5efKcyu95Mp988knAYrFYLBaLxWKxWCwWi8VisVgsFovFYrEoMibpCgQhVyguAHBU8fCLlXJpSoTVaThyheJ6AOuYjzZUyqX1ydTGokLqhZ4rFIdl363tXIG1nT8Vfrf7wCF0rtvoVXR3pVxaGLJ6DUmuUBwe6O0BAMxe/AD6z5wVHlcpl1LfvhqF1P0QuUKxA8BO9jNqVKbY1LUDm7pedX1mG6Ua9OKV/SYz59+LS5cHpOfb55wMqXnorOU+/Mo2zPvBnNiuzVsl2xjlsNYcAPJt7b4v4nxbu9fXdmgVA4k26FyheBLAnQCw6uEHsfnpx5OsDgB3o7SCd0NjcxI2+6x0e12nzpzF9xY/UPO5febRkMhDZa13mG65j6VwWLzgbrzx0gtaZR8/cRKLfrYagG18BN9t1xX68RMncfz9k1i8YB7uKNxW8z33e7ZWyqXPQ1XY4hBrA2a95abH3TwHu9/F8fdPYvuefcLvJ0/K4/SxI77lsJbHCr626z578QP46OCbwmNVX8QElcs5UhdWyqXuAFW1MMTWcP2cOHEicsb51euhJ5/Bwe53ATS24HOF4k4AHV7PS2f4kysUZwHoYz+7o3Ab3tu7y1VWIz9zE0T+8Ejg8+bOweHfbov6coFgG6afpbcNr9aqs9DzGejtCfSs+OnUgd4el4Vv5OcehkgfWpqsuCoq485Llwcwc/69ABqz4cl+V1b [... omitted end of long line]',
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB9AAAAfQCAYAAAHtP/TvAAAACXBIWXMAAAsSAAALEgHS3X78AAAgAElEQVR4nOy9e3hU1dn3/w1MBDHIQWmeECFEA+OIVRPzPFdNJAQtRTDwilDOxSAvhBYqFVAktIZoCWIBD4VHIg1Ey7kgFiLUUksITdq3v0CUlo4j2AgINLUCMeGYgfz+mFmbNXv2ntnnvfZkfa6Li5k9+7Ays7/7vte97nUvgMPhcDgcDofD4XA4HA6Hw+FwOBwOh8PhcDgcDofD4XA4HA6Hw+FwOBwOh8PhcCLhcntaXW5Pq93t4DiLdnY3gKMcl9vTWlgwVXjNBc/hxCAut6f18oWzwr9tH7zfSgTPRc+JRJzdDeAow+X2nAPQtflQNQAgISMb5DV5T9HN7/Oet7SBHKZx2d0AjmK60sIWQz5rbGpG8sAh51xuDwDA7/PyhzmH99GdyNDpsyAn+i6dE9B8qFr4nHLt11nZRg5b8Ke9A3C5Pa0pPZNwpGIbgHC3XQm0a8+tfNuDW3SHQEQOAKXFC1UfT6z8zAljwAN4bQ/+ZGccl9vzEwCvyQXh9MCtfNuBB+PY5zWjhC2GnPew7yiyxucL1p2LPvbgrruDyBqfr8qa988bjaHTZ0Xd7z53XwCQCuA9oa2lHNbgFp1hxH3ow76jio7LGp8v7Huswx8Rn1EHALIPiVUbtwqfkf9XbdyK+cve2MGH6WIDx/94KgJKxX6fd5GZbTEal9vTSosza3w+ajaVRz0uISMbAztexOTO5zH2w3okZGRj84olyMvNiXiM3INAlIxT7vd5pyj8EzgcYxCnhYr/fXb0SOugiRNCUkWD/7ra3fZIuNyePvTfFu3vpPe7um99q8vtaW19DK1Kz7G36qNWl9vTOmjiBNl98ufN5Sm3DiUmLDqxRJmPj8K4EcMwLzjxIxIdb+nO9N/ucnta96xZiQEPpgN [... omitted end of long line]',
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB9AAAAfQCAYAAAHtP/TvAAAACXBIWXMAAAsSAAALEgHS3X78AAAgAElEQVR4nOy9fXxU5Zn//5kwgQiDCdEYkyghXWAc2SIJ2babNCS09sdDA6uNqyLWovw09gdVq35lhV95csVlF2ntwtbUF0qtPJSVaoUirHZJSMO23TwoXZwOsIaASYxoSMwEAxky3z9m7sM9Z86ZOTNz5jzMud6vV16ZOXPOfa4zcz7nuu6n6wYIgiAIgiAIgiAIgiAIgiAIgiAIgiAIgiAIgiAIgiAIgiAIgiAIgiAIgiAIgiAIIhyb3gYQhNrYnS5/vMf6PO6U1ERKXhRhLexOVzuASfw2b2tTzOU4SsrFm/p8HveEuA0zECR0wrTwnpsX9pia7JjLuri3N2wbL3yze3pTG08YD7vTdRuANwBg9+bnUF01Ky5hR4MX/pmubtxcfQd7W+zzuN9T/YRJhoROmAbmwTsbDuG6JROj7n9rdyEahsZG3e8+Rz+25XRJfna5+mH47t8gvGde3mwe3lTGEtaECbyitBj/+dlO2f2mn52MDl+6KuccLnKHbWNenvfwZhG8KYwkrAsTuZTwGOntLtnPKkqL8fbPt4SXu2cjRv1qY1Svf67wBLLSLgvvR6Z9HcPr3wJgLu9ueAMJa2J3utYCWCPnxZ/py8H689eGbY+ntZ1hO/1njH6iUvLBsXrCp/hR1jnhPfPujS1tmPfgcgCo93ncc+M+eZIhoROGI5oXFwtxunMKju7arqoNow7vws5/Woml5/JDtofYNC4TF19tB2B8725IowjrEknkYoF/sP91TMzPS7pNf/j2Dbi1uzBkG28f8+5GFrvhDCKsSywiTyREj4e0400Y+92nQraZSeyGMoawLkpFrrXAxYypyQ6xxyxiT9PbAIKwO12TgHCRv38pw1AiBwJiHvqHhcJ73j42cIfZaXe6HtP [... omitted end of long line]',
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAMgCAYAAAGsdzb+AAAACXBIWXMAAARtAAAEbQF9GpMFAAAgAElEQVR4nOy9f3QTV5bv+/UPgRtKkZsOCbbTFn4P43FInFgw6QyKsXnTs7hmDG/uhUvjQPNomGBm8OvcIbntAN1hSF+cZhbJXDIwjZMLnZXhV/PgzhrwmOFOT8fG7dy8XGwnTohbmLeMnWAnIaGtSLht5B/vD/mUq6RSqapUpSpJ8yMWC6tUdeqoTu2zz9lnn70BgiAIgiAIgiAIIqVJM7sCmUXFk2bXwWzGPN18O5jaIJlFxZOBgu643Gti0VP835OPuIP/z83H5AP5U9+741IPKTiXm2+UTNNqEYKttxiscfrGbHjpd3NxbO5A2HdaSb/2m+kPwr9NZvT8HdHndJPqIeKnQ3Ph72iDrbcYADCvnz7H31/5CADw6x1/Rr+H25kVi6uWkJCfZN+GzeXGbed1AEERBoBAATD3r/8U3K0CBArMrGH8sESDABB1ScK/H5sxEnN3lUhYpkF+OjQX/3SXwwf3ssyuiuFkp49jaCIDAHDg1FnRd6aPsqykH9KvtU39H1T6ab0fAne/RtpdL9JufmjIPUfP37HmKMsKsKGvmUNgapAYYIOPUGKRemoQlSyt3owuTw/8HW0RBxujCDaWloahBlEB53LD39qEmZsKgDVz+HmTkEBBN2aumYNAAfB/bKvFgeeeRUlRoeJ78Eo9s6j4cQCdutRcBVJvUaSuQM97qIVzuXmJYJaDQN0JTDyxUnTejOfKMePtsWnpme3A8f94BBtWrQwtUlS2lFLvjPeIR+rBaxX1aPeJpczQxvB3tGE0wrn3XmmBH8CkoGEWv/7nwKoBRfeybJc1c80cHUsL71qUUt9wHPe+cxf4YroxlMAa5rU/WYAf3ncHNoUvheUaxN/RBs7lxq9yZgEArozMhjPzHpyZAf7zsqy [... omitted end of long line]',
+      ];
       
-      if (savedUrl) document.getElementById('supabaseUrl').value = savedUrl;
-      if (savedKey) document.getElementById('supabaseKey').value = savedKey;
+      const randomImage = emptyStateImages[Math.floor(Math.random() * emptyStateImages.length)];
+      const emptyStateImageEl = document.getElementById('emptyStateImage');
+      if (emptyStateImageEl) {
+        emptyStateImageEl.src = randomImage;
+        emptyStateImageEl.alt = 'Empty state illustration';
+      }
+    }
+
+    // Initialize on page load
+    window.onload = function() {
+      waitForSupabase(function() {
+        loadData();
+      });
     };
   </script>
 </body>
 </html>
-
