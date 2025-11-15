@@ -102,6 +102,12 @@ figma.ui.onmessage = async (msg) => {
     await scanCurrentPage();
   } else if (msg.type === 'navigate-to-node') {
     await navigateToNode(msg.nodeId);
+  } else if (msg.type === 'get-user-id') {
+    const userId = await getUserId();
+    figma.ui.postMessage({
+      type: 'user-id',
+      userId: userId,
+    });
   }
 };
 

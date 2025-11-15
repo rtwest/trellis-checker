@@ -406,6 +406,120 @@
     #scoreCard {
       flex-shrink: 0;
     }
+
+    .feedback-button {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      padding: 8px 12px;
+      background: #000000;
+      color: #ffffff;
+      border: 1px solid #000000;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.1s;
+      z-index: 1000;
+    }
+
+    .feedback-button:hover {
+      background: #333333;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 16px;
+      width: 90%;
+      max-width: 400px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 12px;
+      color: #000000;
+    }
+
+    .modal-body {
+      margin-bottom: 16px;
+    }
+
+    .modal-body textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 8px;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: inherit;
+      resize: vertical;
+      box-sizing: border-box;
+    }
+
+    .modal-body a {
+      color: #000000;
+      text-decoration: underline;
+      font-size: 11px;
+      display: block;
+      margin-top: 8px;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .modal-button {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid #e5e5e5;
+      background: #ffffff;
+      color: #000000;
+    }
+
+    .modal-button:hover {
+      background: #f8f8f8;
+    }
+
+    .modal-button-primary {
+      background: #000000;
+      color: #ffffff;
+      border-color: #000000;
+    }
+
+    .modal-button-primary:hover {
+      background: #333333;
+    }
+
+    .modal-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
@@ -547,9 +661,18 @@
       scanBtnResults.addEventListener('click', performScan);
     }
 
+    // Get user ID from plugin
+    let currentUserId = null;
+
     // Listen for messages from plugin
     onmessage = (event) => {
       const msg = event.data.pluginMessage;
+      
+      // Handle user ID response
+      if (msg.type === 'user-id') {
+        currentUserId = msg.userId;
+        return;
+      }
       
       // Handle analytics tracking messages
       if (msg.type === 'track-event') {
@@ -752,6 +875,94 @@
       scoreCard.style.display = 'none';
       tabsContainer.style.display = 'none';
     }
+
+    // Feedback functionality
+    const feedbackButton = document.createElement('button');
+    feedbackButton.className = 'feedback-button';
+    feedbackButton.textContent = '💬 Feedback';
+    document.body.appendChild(feedbackButton);
+
+    const modalOverlay = document.createElement('div');
+    modalOverlay.className = 'modal-overlay';
+    modalOverlay.innerHTML = `
+      <div class="modal">
+        <div class="modal-header">Provide Feedback</div>
+        <div class="modal-body">
+          <textarea id="feedbackText" placeholder="Share your thoughts, suggestions, or report issues..."></textarea>
+          <a href="https://rwest.github.io/trellis-checker/docs/" target="_blank">View Dashboard</a>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-button" id="cancelFeedback">Cancel</button>
+          <button class="modal-button modal-button-primary" id="submitFeedback">Submit</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modalOverlay);
+
+    feedbackButton.addEventListener('click', () => {
+      modalOverlay.classList.add('active');
+      document.getElementById('feedbackText').focus();
+    });
+
+    document.getElementById('cancelFeedback').addEventListener('click', () => {
+      modalOverlay.classList.remove('active');
+      document.getElementById('feedbackText').value = '';
+    });
+
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) {
+        modalOverlay.classList.remove('active');
+        document.getElementById('feedbackText').value = '';
+      }
+    });
+
+    document.getElementById('submitFeedback').addEventListener('click', async () => {
+      const feedbackText = document.getElementById('feedbackText').value.trim();
+      if (!feedbackText) {
+        alert('Please enter your feedback');
+        return;
+      }
+
+      const submitButton = document.getElementById('submitFeedback');
+      submitButton.disabled = true;
+      submitButton.textContent = 'Submitting...';
+
+      try {
+        // Request user ID from plugin
+        parent.postMessage({ pluginMessage: { type: 'get-user-id' } }, '*');
+        
+        // Wait a bit for the response
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Submit feedback to Supabase
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient
+            .from('feedback')
+            .insert([
+              {
+                user_id: currentUserId,
+                feedback_text: feedbackText,
+              },
+            ]);
+
+          if (error) {
+            throw error;
+          }
+
+          alert('Thank you for your feedback!');
+          modalOverlay.classList.remove('active');
+          document.getElementById('feedbackText').value = '';
+        } else {
+          throw new Error('Supabase client not initialized');
+        }
+      } catch (error) {
+        console.error('Error submitting feedback:', error);
+        alert('Failed to submit feedback. Please try again.');
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Submit';
+      }
+    });
   </script>
 </body>
 </html>

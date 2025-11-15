@@ -247,6 +247,22 @@
           </tbody>
         </table>
       </div>
+
+      <div class="table-container" style="margin-top: 16px;">
+        <h3>User Feedback</h3>
+        <div id="feedbackSummary" style="margin-bottom: 12px; padding: 8px; background: #f8f8f8; border-radius: 6px; font-size: 11px; color: #666666;"></div>
+        <table id="feedbackTable">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>User ID</th>
+              <th>Feedback</th>
+            </tr>
+          </thead>
+          <tbody id="feedbackTableBody">
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <div id="emptyState" class="empty-state" style="display: none;">
@@ -331,6 +347,9 @@
 
         // Update table
         updateTable(scanEvents);
+
+        // Load feedback
+        await loadFeedback();
 
         document.getElementById('loading').style.display = 'none';
         document.getElementById('dashboard').style.display = 'block';
@@ -572,6 +591,56 @@
         row.insertCell(4).textContent = e.local_components || 0;
         row.insertCell(5).textContent = e.custom_shapes || 0;
         row.insertCell(6).textContent = e.custom_text || 0;
+      });
+    }
+
+    async function loadFeedback() {
+      try {
+        const { data: feedback, error } = await supabaseClient
+          .from('feedback')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(100);
+
+        if (error) {
+          console.error('Error loading feedback:', error);
+          return;
+        }
+
+        if (feedback && feedback.length > 0) {
+          updateFeedbackTable(feedback);
+          generateFeedbackSummary(feedback);
+        } else {
+          document.getElementById('feedbackTableBody').innerHTML = '<tr><td colspan="3" class="empty-state">No feedback yet</td></tr>';
+          document.getElementById('feedbackSummary').textContent = 'No feedback submitted yet.';
+        }
+      } catch (error) {
+        console.error('Error loading feedback:', error);
+      }
+    }
+
+    function generateFeedbackSummary(feedback) {
+      const total = feedback.length;
+      const uniqueUsers = new Set(feedback.filter(f => f.user_id).map(f => f.user_id)).size;
+      const avgLength = feedback.reduce((sum, f) => sum + (f.feedback_text?.length || 0), 0) / total;
+      
+      const summary = `Total feedback: ${total} | Unique users: ${uniqueUsers} | Average length: ${Math.round(avgLength)} characters`;
+      document.getElementById('feedbackSummary').textContent = summary;
+    }
+
+    function updateFeedbackTable(feedback) {
+      const tbody = document.getElementById('feedbackTableBody');
+      tbody.innerHTML = '';
+
+      feedback.forEach(f => {
+        const row = tbody.insertRow();
+        const date = new Date(f.created_at);
+        row.insertCell(0).textContent = date.toLocaleString();
+        row.insertCell(1).textContent = f.user_id || 'Anonymous';
+        const feedbackCell = row.insertCell(2);
+        feedbackCell.textContent = f.feedback_text || '';
+        feedbackCell.style.maxWidth = '400px';
+        feedbackCell.style.wordWrap = 'break-word';
       });
     }
 

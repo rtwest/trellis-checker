@@ -59,3 +59,36 @@ ORDER BY scan_date DESC;
 GRANT SELECT ON scan_events_summary TO authenticated;
 GRANT SELECT ON scan_events_summary TO anon;
 
+-- Create feedback table
+CREATE TABLE IF NOT EXISTS feedback (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id TEXT,
+  feedback_text TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create index for faster queries
+CREATE INDEX IF NOT EXISTS idx_feedback_created_at ON feedback(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_feedback_user_id ON feedback(user_id);
+
+-- Enable Row Level Security (RLS)
+ALTER TABLE feedback ENABLE ROW LEVEL SECURITY;
+
+-- Create policy to allow anonymous inserts (for plugin to send feedback)
+CREATE POLICY "Allow anonymous inserts" ON feedback
+  FOR INSERT
+  TO anon
+  WITH CHECK (true);
+
+-- Create policy to allow authenticated reads (for dashboard)
+CREATE POLICY "Allow authenticated reads" ON feedback
+  FOR SELECT
+  TO authenticated
+  USING (true);
+
+-- Also allow anonymous reads for dashboard (since dashboard uses anon key)
+CREATE POLICY "Allow anonymous reads" ON feedback
+  FOR SELECT
+  TO anon
+  USING (true);
+
