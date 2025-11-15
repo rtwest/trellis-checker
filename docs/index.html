@@ -185,6 +185,44 @@
       display: block;
       margin-top: 8px;
     }
+
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+      padding: 8px 0;
+    }
+
+    .pagination-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pagination-button {
+      background: #f8f8f8;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      color: #000000;
+    }
+
+    .pagination-button:hover:not(:disabled) {
+      background: #e5e5e5;
+    }
+
+    .pagination-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .pagination-info {
+      font-size: 11px;
+      color: #666666;
+    }
   </style>
 </head>
 <body>
@@ -235,22 +273,28 @@
           <thead>
             <tr>
               <th>Date</th>
-              <th>Elements</th>
-              <th>Compliance</th>
-              <th>Library</th>
-              <th>Local</th>
-              <th>Shapes</th>
-              <th>Text</th>
+              <th>Elements Found</th>
+              <th>Compliance Score</th>
+              <th>Library Components</th>
+              <th>Local Components</th>
+              <th>Custom Shapes</th>
+              <th>Custom Text</th>
             </tr>
           </thead>
           <tbody id="scansTableBody">
           </tbody>
         </table>
+        <div class="pagination" id="scansPagination" style="display: none;">
+          <div class="pagination-info" id="scansPaginationInfo"></div>
+          <div class="pagination-controls">
+            <button class="pagination-button" id="scansPrevButton" onclick="changeScansPage(-1)">Previous</button>
+            <button class="pagination-button" id="scansNextButton" onclick="changeScansPage(1)">Next</button>
+          </div>
+        </div>
       </div>
 
       <div class="table-container" style="margin-top: 16px;">
         <h3>User Feedback</h3>
-        <div id="feedbackSummary" style="margin-bottom: 12px; padding: 8px; background: #f8f8f8; border-radius: 6px; font-size: 11px; color: #666666;"></div>
         <table id="feedbackTable">
           <thead>
             <tr>
@@ -281,6 +325,9 @@
     
     let supabaseClient = null;
     let installsChart, scansChart, scanIssuesChart;
+    let allScanEvents = [];
+    let currentScansPage = 1;
+    const scansPerPage = 20;
 
     // Initialize Supabase client
     function initSupabase() {
@@ -339,6 +386,14 @@
         const scanEvents = events.filter(e => e.event_type === 'scan_executed');
         const installEvents = events.filter(e => e.event_type === 'plugin_installed');
 
+        // Store all scan events for pagination
+        allScanEvents = scanEvents
+          .map(e => ({
+            date: new Date(e.created_at),
+            ...e,
+          }))
+          .sort((a, b) => b.date - a.date);
+
         // Update stats
         updateStats(scanEvents, installEvents, events);
 
@@ -346,7 +401,7 @@
         updateCharts(scanEvents, installEvents);
 
         // Update table
-        updateTable(scanEvents);
+        updateTable();
 
         // Load feedback
         await loadFeedback();
@@ -397,17 +452,15 @@
       const installsCtx = document.getElementById('installsChart').getContext('2d');
       if (installsChart) installsChart.destroy();
       installsChart = new Chart(installsCtx, {
-        type: 'line',
+        type: 'bar',
         data: {
           labels: sortedDates.map(d => new Date(d).toLocaleDateString()),
           datasets: [{
             label: 'Installs',
             data: sortedDates.map(d => installsByDate[d] || 0),
+            backgroundColor: '#000000',
             borderColor: '#000000',
-            backgroundColor: 'rgba(0, 0, 0, 0.1)',
-            tension: 0.4,
             borderWidth: 1,
-            fill: true,
           }],
         },
         options: {
@@ -455,17 +508,15 @@
       const scansCtx = document.getElementById('scansChart').getContext('2d');
       if (scansChart) scansChart.destroy();
       scansChart = new Chart(scansCtx, {
-        type: 'line',
+        type: 'bar',
         data: {
           labels: scanDates.map(d => new Date(d).toLocaleDateString()),
           datasets: [{
             label: 'Scans',
             data: scanDates.map(d => scansByDate[d]),
+            backgroundColor: '#000000',
             borderColor: '#000000',
-            backgroundColor: 'rgba(0, 0, 0, 0.1)',
-            tension: 0.4,
             borderWidth: 1,
-            fill: true,
           }],
         },
         options: {
@@ -519,17 +570,15 @@
       const scanIssuesCtx = document.getElementById('scanIssuesChart').getContext('2d');
       if (scanIssuesChart) scanIssuesChart.destroy();
       scanIssuesChart = new Chart(scanIssuesCtx, {
-        type: 'line',
+        type: 'bar',
         data: {
           labels: issueDates.map(d => new Date(d).toLocaleDateString()),
           datasets: [{
             label: 'Issues Found',
             data: issueDates.map(d => scanIssuesByDate[d]),
+            backgroundColor: '#666666',
             borderColor: '#666666',
-            backgroundColor: 'rgba(102, 102, 102, 0.1)',
-            tension: 0.4,
             borderWidth: 1,
-            fill: true,
           }],
         },
         options: {
@@ -570,19 +619,16 @@
       });
     }
 
-    function updateTable(scanEvents) {
+    function updateTable() {
       const tbody = document.getElementById('scansTableBody');
       tbody.innerHTML = '';
 
-      const sortedEvents = scanEvents
-        .map(e => ({
-          date: new Date(e.created_at),
-          ...e,
-        }))
-        .sort((a, b) => b.date - a.date)
-        .slice(0, 20); // Show last 20
+      const totalPages = Math.ceil(allScanEvents.length / scansPerPage);
+      const startIndex = (currentScansPage - 1) * scansPerPage;
+      const endIndex = startIndex + scansPerPage;
+      const pageEvents = allScanEvents.slice(startIndex, endIndex);
 
-      sortedEvents.forEach(e => {
+      pageEvents.forEach(e => {
         const row = tbody.insertRow();
         row.insertCell(0).textContent = e.date.toLocaleString();
         row.insertCell(1).textContent = e.elements_scanned || 0;
@@ -592,6 +638,31 @@
         row.insertCell(5).textContent = e.custom_shapes || 0;
         row.insertCell(6).textContent = e.custom_text || 0;
       });
+
+      // Update pagination controls
+      const paginationDiv = document.getElementById('scansPagination');
+      const prevButton = document.getElementById('scansPrevButton');
+      const nextButton = document.getElementById('scansNextButton');
+      const paginationInfo = document.getElementById('scansPaginationInfo');
+
+      if (allScanEvents.length > scansPerPage) {
+        paginationDiv.style.display = 'flex';
+        prevButton.disabled = currentScansPage === 1;
+        nextButton.disabled = currentScansPage === totalPages;
+        paginationInfo.textContent = `Page ${currentScansPage} of ${totalPages} (${allScanEvents.length} total)`;
+      } else {
+        paginationDiv.style.display = 'none';
+      }
+    }
+
+    function changeScansPage(direction) {
+      const totalPages = Math.ceil(allScanEvents.length / scansPerPage);
+      const newPage = currentScansPage + direction;
+      
+      if (newPage >= 1 && newPage <= totalPages) {
+        currentScansPage = newPage;
+        updateTable();
+      }
     }
 
     async function loadFeedback() {
@@ -609,23 +680,12 @@
 
         if (feedback && feedback.length > 0) {
           updateFeedbackTable(feedback);
-          generateFeedbackSummary(feedback);
         } else {
           document.getElementById('feedbackTableBody').innerHTML = '<tr><td colspan="3" class="empty-state">No feedback yet</td></tr>';
-          document.getElementById('feedbackSummary').textContent = 'No feedback submitted yet.';
         }
       } catch (error) {
         console.error('Error loading feedback:', error);
       }
-    }
-
-    function generateFeedbackSummary(feedback) {
-      const total = feedback.length;
-      const uniqueUsers = new Set(feedback.filter(f => f.user_id).map(f => f.user_id)).size;
-      const avgLength = feedback.reduce((sum, f) => sum + (f.feedback_text?.length || 0), 0) / total;
-      
-      const summary = `Total feedback: ${total} | Unique users: ${uniqueUsers} | Average length: ${Math.round(avgLength)} characters`;
-      document.getElementById('feedbackSummary').textContent = summary;
     }
 
     function updateFeedbackTable(feedback) {
