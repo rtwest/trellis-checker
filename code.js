@@ -6,23 +6,8 @@ let scannedComponents = {
   customText: []
 };
 
-// ===== SENTRY ANALYTICS TRACKING =====
+// ===== ANALYTICS TRACKING =====
 const PLUGIN_VERSION = '1.0.0';
-
-// Generate stable, anonymized user ID
-async function getUserId() {
-  try {
-    const storedUserId = await figma.clientStorage.getAsync('analytics_user_id');
-    if (storedUserId) return storedUserId;
-    
-    const figmaUserId = (figma.currentUser && figma.currentUser.id) || 'anonymous';
-    const userId = `user_${figmaUserId.substring(0, 8)}_${Date.now().toString(36)}`;
-    await figma.clientStorage.setAsync('analytics_user_id', userId);
-    return userId;
-  } catch (error) {
-    return 'anonymous';
-  }
-}
 
 // Check if this is the first run (installation)
 async function isFirstRun() {
@@ -38,24 +23,12 @@ async function isFirstRun() {
   }
 }
 
-// Set user context in Sentry (via UI)
-function setSentryUser(userId) {
-  figma.ui.postMessage({
-    type: 'set-sentry-user',
-    userId: userId,
-  });
-}
-
 // Track plugin installation (first run)
 async function trackInstallation() {
   console.log('[Analytics] Checking for first run...');
   const isFirst = await isFirstRun();
   console.log('[Analytics] Is first run?', isFirst);
   if (isFirst) {
-    const userId = await getUserId();
-    console.log('[Analytics] User ID:', userId);
-    setSentryUser(userId);
-    
     // Send installation event via UI
     console.log('[Analytics] Sending plugin_installed event...');
     figma.ui.postMessage({
@@ -87,7 +60,7 @@ async function trackScan(scanData) {
     },
   });
 }
-// ===== END SENTRY ANALYTICS =====
+// ===== END ANALYTICS =====
 
 // Show plugin UI with increased height
 figma.showUI(__html__, { width: 400, height: 900 });

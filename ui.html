@@ -3,39 +3,23 @@
 <head>
   <meta charset="UTF-8">
   
-  <!-- Sentry SDK -->
-  <script
-    src="https://browser.sentry-cdn.com/7.91.0/bundle.min.js"
-    crossorigin="anonymous"
-  ></script>
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
-  <!-- Sentry Initialization -->
+  <!-- Supabase Initialization -->
   <script>
-    // Initialize Sentry
-    if (typeof Sentry !== 'undefined') {
-      console.log('[Sentry] Initializing Sentry...');
-      Sentry.init({
-        dsn: 'https://5773de3c75297a52a70d0ba83042ceed@o4507335015727104.ingest.us.sentry.io/4510363633909760',
-        environment: 'production',
-        release: '1.0.0', // Update this when you release new versions
-        
-        // Configure what to capture
-        beforeSend(event, hint) {
-          // Add plugin context to all events
-          event.tags = {
-            ...event.tags,
-            plugin: 'trellis-checker',
-          };
-          console.log('[Sentry] Sending event:', event.message || event.event_id);
-          return event;
-        },
-      });
-      
-      // Make Sentry available globally
-      window.Sentry = Sentry;
-      console.log('[Sentry] Sentry initialized successfully');
-    } else {
-      console.error('[Sentry] Sentry SDK not loaded! Check if script loaded correctly.');
+    // Supabase configuration
+    const SUPABASE_URL = 'https://yritqctvxlhabyxwlisi.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyaXRxY3R2eGxoYWJ5eHdsaXNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1OTMwNTMsImV4cCI6MjA2NjE2OTA1M30.g82egwBOdKCSw11rbySbgXa98N2w49ZRROHE2gT0P9k';
+    
+    let supabaseClient = null;
+    if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+      try {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('[Supabase] Client initialized successfully');
+      } catch (error) {
+        console.error('[Supabase] Failed to initialize:', error);
+      }
     }
   </script>
   
@@ -458,12 +442,11 @@
       emptyStateImageEl.src = randomImage;
       emptyStateImageEl.alt = 'Empty state illustration';
       emptyStateImageEl.onerror = function() {
-        console.error('Failed to load image:', randomImage);
         // Hide image on error
         this.style.display = 'none';
       };
       emptyStateImageEl.onload = function() {
-        console.log('Successfully loaded image:', randomImage);
+        // Image loaded successfully
       };
     }
 
@@ -540,52 +523,47 @@
       scanBtnResults.addEventListener('click', performScan);
     }
 
-    // Handle messages from code.js to track events in Sentry
-    window.addEventListener('message', (event) => {
-      if (event.data.pluginMessage) {
-        const msg = event.data.pluginMessage;
-        
-        if (msg.type === 'track-event') {
-          // Track custom event in Sentry
-          console.log('[Sentry] Received track-event:', msg.eventName, msg.eventData);
-          if (window.Sentry) {
-            try {
-              // Use captureEvent for better analytics tracking
-              window.Sentry.captureEvent({
-                message: msg.eventName,
-                level: 'info',
-                tags: {
-                  event_type: msg.eventName,
-                  plugin: 'trellis-checker',
-                },
-                extra: {
-                  ...msg.eventData,
-                  timestamp: new Date().toISOString(),
-                },
-              });
-              console.log('[Sentry] Event sent successfully:', msg.eventName);
-            } catch (error) {
-              console.error('[Sentry] Error sending event:', error);
-            }
-          } else {
-            console.error('[Sentry] Sentry not available when trying to send event:', msg.eventName);
-          }
-        }
-        
-        if (msg.type === 'set-sentry-user') {
-          // Set user context in Sentry
-          if (window.Sentry) {
-            window.Sentry.setUser({
-              id: msg.userId,
-            });
-          }
-        }
-      }
-    });
-
     // Listen for messages from plugin
     onmessage = (event) => {
       const msg = event.data.pluginMessage;
+      
+      // Handle analytics tracking messages
+      if (msg.type === 'track-event') {
+        console.log('[Analytics] Received track-event:', msg.eventName, msg.eventData);
+        
+        // Send to Supabase
+        if (supabaseClient) {
+          supabaseClient
+            .from('analytics_events')
+            .insert([
+              {
+                event_type: msg.eventName,
+                event_name: msg.eventName,
+                elements_scanned: msg.eventData.elements_scanned || 0,
+                compliance_score: msg.eventData.compliance_score || 0,
+                library_components: msg.eventData.library_components || 0,
+                local_components: msg.eventData.local_components || 0,
+                custom_shapes: msg.eventData.custom_shapes || 0,
+                custom_text: msg.eventData.custom_text || 0,
+                figma_version: msg.eventData.figma_version || null,
+                plugin_version: msg.eventData.plugin_version || null,
+                metadata: msg.eventData,
+              },
+            ])
+            .then(({ data, error }) => {
+              if (error) {
+                console.error('[Supabase] Error sending event:', error);
+              } else {
+                console.log('[Supabase] Event sent successfully:', msg.eventName);
+              }
+            })
+            .catch(error => {
+              console.error('[Supabase] Network error:', error);
+            });
+        }
+        
+        return; // Don't process further, this is a tracking message
+      }
 
       if (msg.type === 'scan-results') {
         const buttons = [scanBtn, scanBtnResults].filter(btn => btn);

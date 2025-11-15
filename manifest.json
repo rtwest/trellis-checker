@@ -7,6 +7,6 @@
   "ui": "ui.html",
   "documentAccess": "dynamic-page",
   "networkAccess": {
-    "allowedDomains": ["https://*.sentry.io", "https://*.ingest.sentry.io", "https://*.ingest.us.sentry.io", "https://browser.sentry-cdn.com"]
+    "allowedDomains": ["https://*.supabase.co", "https://fonts.googleapis.com", "https://fonts.gstatic.com"]
   }
 }
