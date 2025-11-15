@@ -411,20 +411,48 @@
       position: fixed;
       bottom: 16px;
       right: 16px;
-      padding: 8px 12px;
-      background: #000000;
-      color: #ffffff;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      background: #ffffff;
+      color: #000000;
       border: 1px solid #000000;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 500;
+      border-radius: 50%;
+      font-size: 18px;
+      font-weight: 400;
       cursor: pointer;
-      transition: background 0.1s;
+      transition: all 0.1s;
       z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .feedback-button:hover {
-      background: #333333;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .feedback-button::after {
+      content: 'Feedback would be terrific!';
+      position: absolute;
+      bottom: 100%;
+      right: 0;
+      margin-bottom: 8px;
+      padding: 6px 10px;
+      background: #000000;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 400;
+      white-space: nowrap;
+      border-radius: 4px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .feedback-button:hover::after {
+      opacity: 1;
     }
 
     .modal-overlay {
@@ -878,7 +906,8 @@
     // Feedback functionality
     const feedbackButton = document.createElement('button');
     feedbackButton.className = 'feedback-button';
-    feedbackButton.textContent = '💬 Feedback';
+    feedbackButton.textContent = '💬';
+    feedbackButton.setAttribute('aria-label', 'Provide feedback');
     document.body.appendChild(feedbackButton);
 
     const modalOverlay = document.createElement('div');
